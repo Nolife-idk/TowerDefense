@@ -11,7 +11,7 @@ private:
 	// sf::Vector2f size;
 	const Path& path;
 	std::size_t currentWaypoint = 0;
-	float speed = 50.0f;
+	float speed = 300.0f;
 public:
 	
 	
