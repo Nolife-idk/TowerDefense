@@ -60,8 +60,9 @@ int main()
     Path path(waypoints);
     
     // Enemy enemy(path.getNextWaypoint(0), path);
-    
-
+    bool isPlacingTurret = false;
+    sf::RectangleShape turretPreview(sf::Vector2f(100.0f, 100.0f));
+    turretPreview.setFillColor(sf::Color(255, 255, 255, 100));
     sf::Clock deltaClock;
 
     // Main game loop
@@ -73,14 +74,22 @@ int main()
             if (event.type == sf::Event::Closed){
                 window.close();
             }
-            if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P) 
+            {
+                isPlacingTurret = !isPlacingTurret;
+                std::cout << (isPlacingTurret ? "enable" : "disable") << std::endl;
+            }
+
+            if (isPlacingTurret && event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
             {
                 float x = event.mouseButton.x;
                 float y = event.mouseButton.y;
                 bool canPlaceTower = true;
-                float towerWidth = 100.0f;
-                float towerHeight = 100.0f;
-                sf::FloatRect towerBounds(x - towerWidth / 2.0f, y - towerHeight / 2.0f, towerWidth, towerHeight);
+                float towerWidth = 50.0f;
+                float towerHeight = 50.0f;
+                float towerWidthb = 100.0f;
+                float towerHeightb = 100.0f;
+                sf::FloatRect towerBounds(x - towerWidthb / 2.0f, y - towerHeightb / 2.0f, towerWidth, towerHeight);
                 for (const Wayy& wayy : ways) 
                 {
                 if (towerBounds.intersects(wayy.shape.getGlobalBounds())) 
@@ -107,9 +116,11 @@ int main()
                     std::cout << "Can't place tower on the path!" << std::endl;
                 }
             }
-            
-            
-            
+        }
+        if (isPlacingTurret) 
+        {
+            sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+            turretPreview.setPosition(mousePos.x - turretPreview.getSize().x / 2.0f, mousePos.y - turretPreview.getSize().y / 2.0f);
         }
 
         if (enemies.size() < 100)
@@ -132,6 +143,15 @@ int main()
         for (Wayy& wayy : ways) {
             
             wayy.draw(window);
+            if (isPlacingTurret) 
+            {
+                sf::RectangleShape pathBorder(wayy.shape.getSize());
+                pathBorder.setPosition(wayy.shape.getPosition());
+                pathBorder.setFillColor(sf::Color::Transparent);
+                pathBorder.setOutlineThickness(2.0f);
+                pathBorder.setOutlineColor(sf::Color::Red);
+                window.draw(pathBorder);
+            }
         }
        
         for (Enemy& enemy : enemies)
@@ -143,6 +163,16 @@ int main()
         
         for (Tower& tower : towers) {
             tower.draw(window);
+            if (isPlacingTurret) 
+            {
+                sf::RectangleShape towerBorder(sf::Vector2f(100.0f, 100.0f)); // Tower border size
+                towerBorder.setPosition(tower.shape.getPosition());
+                towerBorder.setFillColor(sf::Color::Transparent);
+                towerBorder.setOutlineThickness(2.0f);
+                towerBorder.setOutlineColor(sf::Color::Blue); // Blue border for towers
+                window.draw(towerBorder);
+                window.draw(turretPreview);
+            }
         }
         window.display();
     }
