@@ -7,16 +7,17 @@
 #include "wayy.hpp"
 
 using namespace std;
+//vitejte v mem mainu, zde najdete main game looopu a picoviny, ktere casem pujdou jinam, ted se mi to nechce delat, enjoyy
 int main() 
 {
-    
+    //vektory pro ukladani
     std::vector<Tower> towers;
     std::vector<Wayy> ways;
     std::vector<Enemy> enemies;
     
     // Create a window
     sf::RenderWindow window(sf::VideoMode(2560, 1440), "Tower Defense");
-    
+    ///vektory pro waypoints a cesticky, az se ti bude chtit, mrdni to jinam, zabira misto v mainu, uz se ztrazim
     std::vector<sf::Vector2f> waypoints = {
 /////////x////y///////
         {0, 300},//1
@@ -59,7 +60,7 @@ int main()
 
     Path path(waypoints);
     
-    // Enemy enemy(path.getNextWaypoint(0), path);
+    // veci ktere nwm kam jinam dat
     bool isPlacingTurret = false;
     sf::RectangleShape turretPreview(sf::Vector2f(100.0f, 100.0f));
     turretPreview.setFillColor(sf::Color(255, 255, 255, 100));
@@ -67,6 +68,7 @@ int main()
 
     // Main game loop
     while (window.isOpen()) {
+        //system time 
         sf::Time dt_time = deltaClock.restart();
         const float dt = dt_time.asSeconds();
         sf::Event event;
@@ -74,12 +76,13 @@ int main()
             if (event.type == sf::Event::Closed){
                 window.close();
             }
+            //hehe, place na p
              if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P) 
             {
                 isPlacingTurret = !isPlacingTurret;
                 std::cout << (isPlacingTurret ? "enable" : "disable") << std::endl;
             }
-
+            /// picoviny pro fuckin turret placement, PRESUN DO JINEHO SOUBORU, NECHCES NA TO UZ KOUKAT
             if (isPlacingTurret && event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
             {
                 float x = event.mouseButton.x;
@@ -92,6 +95,7 @@ int main()
                 sf::FloatRect towerBounds(x - towerWidth / 2.0f, y - towerHeight / 2.0f, towerWidth, towerHeight);
                 for (const Wayy& wayy : ways) 
                 {
+                /// wrong place pokud je blizko ceste
                 if (towerBounds.intersects(wayy.shape.getGlobalBounds())) 
                 {
                     canPlaceTower = false;
@@ -101,12 +105,14 @@ int main()
                 for (const Tower& tower : towers)  
                 {
                     sf::FloatRect existingTowerBounds(tower.shape.getPosition().x, tower.shape.getPosition().y, towerWidth, towerHeight);
+                    /// wrong place pokud je blizko towerce
                     if (towerBounds.intersects(existingTowerBounds)) 
                     {
                         canPlaceTower = false; 
                         break;
                     }
                 }
+                // pushne turret do vektoru pokud nejsou porusene podminky
                 if (canPlaceTower == true) 
                 {
                     towers.push_back(Tower(x - towerWidth / 2.0f, y - towerHeight / 2.0f));
@@ -117,11 +123,11 @@ int main()
                 }
             }
         }
-        /// 
+        /// outline kolem mysi pri placovani
         if (isPlacingTurret) 
         {
-            // sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-            // turretPreview.setPosition(mousePos.x - turretPreview.getSize().x / 2.0f, mousePos.y - turretPreview.getSize().y / 2.0f);
+            sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+            turretPreview.setPosition(mousePos.x - turretPreview.getSize().x / 2.0f, mousePos.y - turretPreview.getSize().y / 2.0f);
         }
         /// push enemy do vektrou
         if (enemies.size() < 100)
