@@ -85,11 +85,11 @@ int main()
                 float x = event.mouseButton.x;
                 float y = event.mouseButton.y;
                 bool canPlaceTower = true;
-                float towerWidth = 50.0f;
-                float towerHeight = 50.0f;
-                float towerWidthb = 100.0f;
-                float towerHeightb = 100.0f;
-                sf::FloatRect towerBounds(x - towerWidthb / 2.0f, y - towerHeightb / 2.0f, towerWidth, towerHeight);
+                float towerWidth = 100.0f;
+                float towerHeight = 100.0f;
+                // float towerWidthb = 100.0f;
+                // float towerHeightb = 100.0f;
+                sf::FloatRect towerBounds(x - towerWidth / 2.0f, y - towerHeight / 2.0f, towerWidth, towerHeight);
                 for (const Wayy& wayy : ways) 
                 {
                 if (towerBounds.intersects(wayy.shape.getGlobalBounds())) 
@@ -113,20 +113,23 @@ int main()
                 }
                 else 
                 {
-                    std::cout << "Can't place tower on the path!" << std::endl;
+                    std::cout << "wrong placement" << std::endl;
                 }
             }
         }
+        /// 
         if (isPlacingTurret) 
         {
-            sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-            turretPreview.setPosition(mousePos.x - turretPreview.getSize().x / 2.0f, mousePos.y - turretPreview.getSize().y / 2.0f);
+            // sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+            // turretPreview.setPosition(mousePos.x - turretPreview.getSize().x / 2.0f, mousePos.y - turretPreview.getSize().y / 2.0f);
         }
-
+        /// push enemy do vektrou
         if (enemies.size() < 100)
             {
                 enemies.push_back(Enemy(path.waypoints[0], path));
+                
             }
+        //// pushovani cest do vektoru
         for (int i=0; ways.size() < 9; i++)
         {
             float x1 = cord[i].x;
@@ -143,6 +146,7 @@ int main()
         for (Wayy& wayy : ways) {
             
             wayy.draw(window);
+            ///way outline
             if (isPlacingTurret) 
             {
                 sf::RectangleShape pathBorder(wayy.shape.getSize());
@@ -156,20 +160,21 @@ int main()
        
         for (Enemy& enemy : enemies)
         {
-            // cout << "tete";
+            /// enemy draw, MOVE AND SPAWN OPRAVIT!!!!
             enemy.move(dt);
             enemy.draw(window); 
         }
         
         for (Tower& tower : towers) {
             tower.draw(window);
+            ////tower outline
             if (isPlacingTurret) 
             {
-                sf::RectangleShape towerBorder(sf::Vector2f(100.0f, 100.0f)); // Tower border size
+                sf::RectangleShape towerBorder(sf::Vector2f(100.0f, 100.0f));
                 towerBorder.setPosition(tower.shape.getPosition());
                 towerBorder.setFillColor(sf::Color::Transparent);
                 towerBorder.setOutlineThickness(2.0f);
-                towerBorder.setOutlineColor(sf::Color::Blue); // Blue border for towers
+                towerBorder.setOutlineColor(sf::Color::Blue);
                 window.draw(towerBorder);
                 window.draw(turretPreview);
             }
