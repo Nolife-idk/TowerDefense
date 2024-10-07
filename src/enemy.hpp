@@ -7,14 +7,15 @@
 class Enemy
 {		
 private:
+
+public:
 	sf::RectangleShape shape;
 	// sf::Vector2f size;
 	const Path& path;
 	std::size_t currentWaypoint = 0;
-	float speed = 300.0f;
-public:
-	
-	
+	float speed;
+	float health;
+	bool ded; 
 	Enemy(const sf::Vector2f& startPos, const Path& path);
 
 	void move(float dt);

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+
 #include "conf.hpp"
 #include "tower.hpp"
 #include "enemy.hpp"
@@ -65,7 +66,9 @@ int main()
     sf::RectangleShape turretPreview(sf::Vector2f(100.0f, 100.0f));
     turretPreview.setFillColor(sf::Color(255, 255, 255, 100));
     sf::Clock deltaClock;
-
+    sf::Clock spawnClock;
+    float spawnInterval = 5000.0f;
+    float timeSinceLastSpawn = 0.0f;
     // Main game loop
     while (window.isOpen()) {
         //system time 
@@ -123,18 +126,25 @@ int main()
                 }
             }
         }
+                /// push enemy do vektrou
+        timeSinceLastSpawn += spawnClock.getElapsedTime().asSeconds();
+        if (timeSinceLastSpawn >= spawnInterval) {
+            enemies.push_back(Enemy(path.waypoints[0], path));
+            timeSinceLastSpawn = 0.0f;
+            spawnClock.restart();
+        }
         /// outline kolem mysi pri placovani
         if (isPlacingTurret) 
         {
             sf::Vector2i mousePos = sf::Mouse::getPosition(window);
             turretPreview.setPosition(mousePos.x - turretPreview.getSize().x / 2.0f, mousePos.y - turretPreview.getSize().y / 2.0f);
         }
-        /// push enemy do vektrou
-        if (enemies.size() < 100)
-            {
-                enemies.push_back(Enemy(path.waypoints[0], path));
-                
-            }
+        /// push enemy do vektrou OLD
+        // if (enemies.size() < 100)
+        //     {
+        //         enemies.push_back(Enemy(path.waypoints[0], path));
+
+        //     }
         //// pushovani cest do vektoru
         for (int i=0; ways.size() < 9; i++)
         {
@@ -185,8 +195,11 @@ int main()
                 window.draw(turretPreview);
             }
         }
+        for (Tower& tower : towers) {
+        tower.shoot(enemies, dt);
+        }
         window.display();
-    }
+    } 
 
     return 0;
 }
