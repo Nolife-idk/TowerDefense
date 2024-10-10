@@ -1,16 +1,31 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 #include "conf.hpp"
 #include "tower.hpp"
 #include "enemy.hpp"
 #include "path.hpp"
 #include "wayy.hpp"
+#include "hud.hpp"
 
 using namespace std;
+//ja to musim dat jinam pozdeji srry
+void removeded(std::vector<Enemy>& enemies) {
+    enemies.erase(
+        remove_if(enemies.begin(), enemies.end(), [](const Enemy& enemy) {
+            return enemy.ded;
+        }),
+        enemies.end()
+    );
+}
+
 //vitejte v mem mainu, zde najdete main game looopu a picoviny, ktere casem pujdou jinam, ted se mi to nechce delat, enjoyy
 int main() 
 {
+    Hud hud;
+    int money = 200;
+    bool pause = false;
     //vektory pro ukladani
     std::vector<Tower> towers;
     std::vector<Wayy> ways;
@@ -129,7 +144,7 @@ int main()
                 /// push enemy do vektrou
         timeSinceLastSpawn += spawnClock.getElapsedTime().asSeconds();
         if (timeSinceLastSpawn >= spawnInterval) {
-            enemies.push_back(Enemy(path.waypoints[0], path));
+            enemies.push_back(Enemy(path.waypoints[0], &path));
             timeSinceLastSpawn = 0.0f;
             spawnClock.restart();
         }
@@ -176,11 +191,11 @@ int main()
        
         for (Enemy& enemy : enemies)
         {
-            /// enemy draw, MOVE AND SPAWN OPRAVIT!!!!
+            /// enemy draw
             enemy.move(dt);
             enemy.draw(window); 
         }
-        
+        removeded(enemies);
         for (Tower& tower : towers) {
             tower.draw(window);
             ////tower outline
@@ -198,6 +213,7 @@ int main()
         for (Tower& tower : towers) {
         tower.shoot(enemies, dt);
         }
+        hud.draw(window,money, pause);
         window.display();
     } 
 
